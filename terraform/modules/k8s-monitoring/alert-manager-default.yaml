@@ -1,0 +1,29 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: "null"
+  group_by:
+    - alertname
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 1m
+  routes:
+    - receiver: email
+      matchers:
+        - severity =~ "critical|warning"
+
+inhibit_rules:
+  - source_match:
+      alertname: "Watchdog"
+    target_match:
+      alertname: "KubeSchedulerDown"
+    equal: [prometheus]
+  - source_match:
+      alertname: "Watchdog"
+    target_match:
+      alertname: "KubeControllerManagerDown"
+    equal: [prometheus]
+
+templates:
+  - /etc/alertmanager/config/*.tmpl

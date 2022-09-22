@@ -1,0 +1,16 @@
+---
+config:
+  outputs: |-
+        [OUTPUT]
+            Name es
+            Match *
+            Host opensearch-cluster-master
+            Port 9200
+            Logstash_Format Off
+            Retry_Limit False
+            HTTP_User admin
+            HTTP_Passwd ${password}
+            tls  On
+            tls.verify Off
+            Index fluent-bit
+            Type _doc

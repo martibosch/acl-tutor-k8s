@@ -1,0 +1,20 @@
+config:
+   opensearch_dashboards.yaml: |
+    server:
+      name: dashboards
+      host: 0.0.0.0
+
+
+    opensearch:
+      username: admin
+      password: ${password}
+      ssl:
+        verificationMode: certificate
+        certificateAuthorities: [/usr/share/opensearch-dashboards/certs/ca.crt]
+
+
+secretMounts:
+  - name: opensearch-http-certificates
+    secretName: opensearch-http-certificates
+    path: /usr/share/opensearch-dashboards/certs
+    defaultMode: 0644

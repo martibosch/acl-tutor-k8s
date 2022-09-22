@@ -1,0 +1,44 @@
+# https://github.com/prometheus-operator/prometheus-operator/issues/2890
+# Monitor all namespaces
+prometheus:
+  prometheusSpec:
+    ruleSelector: {}
+    ruleNamespaceSelector: {}
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelector: {}
+    podMonitorNamespaceSelector: {}
+    podMonitorSelectorNilUsesHelmValues: false
+
+grafana:
+  defaultDashboardsEnabled: true
+  defaultDashboardsTimezone: browser
+  adminPassword: admin # On first login the user will be asked to change this
+  service:
+    enabled: true
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+    annotations: {}
+    labels: {}
+    portName: service
+
+  extraConfigmapMounts:
+    - name: grafana-extra-dashboards
+      mountPath: /tmp/dashboards/extra/
+      configMap: grafana-extra-dashboards
+      readOnly: false
+
+  dashboards:
+    default:
+      kubernetes-views:
+        file: /tmp/dashboards/extra/default-dashboard.json
+
+  grafana.ini:
+    dashboards:
+      default_home_dashboard_path: /tmp/dashboards/extra/default-dashboard.json
+
+alertmanager:
+  config: ${jsonencode(alert_manager_config)}

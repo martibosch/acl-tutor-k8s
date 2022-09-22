@@ -1,0 +1,76 @@
+replicas: 1
+minimumMasterNodes: 1
+
+extraEnvs:
+  - name: DISABLE_INSTALL_DEMO_CONFIG
+    value: "true"
+
+config:
+  opensearch.yaml: |
+    cluster.name: opensearch-cluster
+    # Bind to all interfaces because we don't know what IP address Docker will assign to us.
+    network.host: 0.0.0.0
+    # # minimum_master_nodes need to be explicitly set when bound on a public IP
+    # # set to 1 to allow single node clusters
+    # discovery.zen.minimum_master_nodes: 1
+    # Setting network.host to a non-loopback address enables the annoying bootstrap checks. "Single-node" mode disables them again.
+    # discovery.type: single-node
+    # Start OpenSearch Security Demo Configuration
+    # WARNING: revise all the lines below before you go into production
+    plugins:
+      security:
+        nodes_dn:
+          - "CN=grove"
+        ssl:
+          transport:
+            pemcert_filepath: certs/tls.crt
+            pemkey_filepath: certs/tls.key
+            pemtrustedcas_filepath: certs/ca.crt
+            enforce_hostname_verification: false
+          http:
+            enabled: true
+            pemcert_filepath: certs/tls.crt
+            pemkey_filepath: certs/tls.key
+            pemtrustedcas_filepath: certs/ca.crt
+        allow_unsafe_democertificates: false
+        allow_default_init_securityindex: true
+        audit.type: internal_opensearch
+        enable_snapshot_restore_privilege: true
+        check_snapshot_restore_write_privileges: true
+        restapi:
+          roles_enabled: ["all_access", "security_rest_api_access"]
+        system_indices:
+          enabled: true
+          indices:
+            [
+              ".opendistro-alerting-config",
+              ".opendistro-alerting-alert*",
+              ".opendistro-anomaly-results*",
+              ".opendistro-anomaly-detector*",
+              ".opendistro-anomaly-checkpoints",
+              ".opendistro-anomaly-detection-state",
+              ".opendistro-reports-*",
+              ".opendistro-notifications-*",
+              ".opendistro-notebooks",
+              ".opendistro-asynchronous-search-response*",
+            ]
+
+
+# See https://github.com/opensearch-project/helm-charts/issues/235
+extraInitContainers:
+  - name: increase-vm-max-map
+    image: busybox
+    command: ["sysctl", "-w", "vm.max_map_count=262144"]
+    securityContext:
+      privileged: true
+      runAsUser: 0
+
+securityConfig:
+  enabled: true
+  internalUsersSecret: internal-users-config-secret
+
+secretMounts:
+  - name: opensearch-http-certificates
+    secretName: opensearch-http-certificates
+    path: /usr/share/opensearch/config/certs
+    defaultMode: 0644
