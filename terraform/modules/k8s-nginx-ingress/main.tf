@@ -1,6 +1,7 @@
 locals {
   global_404_html_path = var.global_404_html_path != "" ? var.global_404_html_path : "${path.module}/404.html"
 }
+
 resource "kubernetes_config_map" "custom_error_pages" {
   metadata {
     name      = "custom-error-pages"

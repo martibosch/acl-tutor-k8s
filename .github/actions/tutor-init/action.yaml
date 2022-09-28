@@ -1,0 +1,40 @@
+# Based on mcdaniel's https://github.com/openedx-actions/tutor-k8s-init/blob/main/action.yml
+name: Open edX Tutor k8s init
+description: Github Action to configure Ubuntu environment for tutor k8s build & deploy workflows
+branding:
+  icon: 'cloud'
+  color: 'orange'
+inputs:
+  namespace:
+    description: 'The Kubernetes namesapce to which the Open edX platform environment will be deployed. Example: openedx-prod'
+    required: false
+    default: UNASSIGNED
+    type: string
+  cluster-name:
+    description: 'The Kubernetes cluster to which the Open edX platform environment will be deployed. Example: yourorg-global-live'
+    required: false
+    default: UNASSIGNED
+    type: string
+  do-region:
+    description: 'The AWS region in which the EKS cluster is hosted. Example: us-east-1'
+    required: false
+    default: us-east-1
+    type: string
+  tutor-version:
+    description: 'The version of tutor to install'
+    required: false
+    default: latest
+    type: string
+
+runs:
+  using: "composite"
+  # steps:
+  #   - name: Setup conda environment with mambaforge
+  #     uses: conda-incubator/setup-miniconda@v2
+  #     with:
+  #       use-mamba: true
+  #       activate-environment: landscape-diarrhea-civ
+  #       environment-file: environment.yml
+  #       miniforge-variant: Mambaforge
+  #       miniforge-version: 4.14.0-0
+
